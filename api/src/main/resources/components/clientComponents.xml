@@ -1,0 +1,44 @@
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+            http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+            http://www.springframework.org/schema/context
+            http://www.springframework.org/schema/context/spring-context-3.0.xsd">
+
+    <bean id="insuranceclaims.FhirRequest"
+          class="org.openmrs.module.insuranceclaims.api.client.impl.FhirRequestClient" >
+    </bean>
+
+    <bean id="insuranceclaims.EligibilityHttpRequest"
+          class="org.openmrs.module.insuranceclaims.api.client.impl.EligibilityHttpRequestImpl" >
+        <property name="client" ref="insuranceclaims.FhirRequest" />
+    </bean>
+
+    <bean id="insuranceclaims.PatientHttpRequest"
+          class="org.openmrs.module.insuranceclaims.api.client.impl.PatientHttpRequestImpl" >
+        <property name="client" ref="insuranceclaims.FhirRequest" />
+    </bean>
+
+    <bean id="insuranceclaims.ClaimHttpRequest"
+          class="org.openmrs.module.insuranceclaims.api.client.impl.ClaimHttpRequestImpl">
+        <property name="fhirInsuranceClaimService" ref="insuranceclaims.FHIRInsuranceClaimService"/>
+        <property name="fhirRequestClient"         ref="insuranceclaims.FhirRequest" />
+    </bean>
+
+    <bean id="insuranceclaims.ExternalApiRequest"
+          class="org.openmrs.module.insuranceclaims.api.service.request.impl.ExternalApiRequestImpl">
+        <property name="claimHttpRequest" ref="insuranceclaims.ClaimHttpRequest" />
+        <property name="fhirInsuranceClaimService" ref="insuranceclaims.FHIRInsuranceClaimService"/>
+        <property name="fhirClaimResponseService"  ref="insuranceclaims.FHIRClaimResponseService"/>
+        <property name="fhirClaimDiagnosisService" ref="insuranceclaims.FHIRClaimDiagnosisService"/>
+        <property name="fhirClaimItemService"      ref="insuranceclaims.FHIRClaimItemService"/>
+        <property name="insuranceClaimService"     ref="insuranceclaims.InsuranceClaimService"/>
+        <property name="insuranceClaimItemService" ref="insuranceclaims.InsuranceClaimItemService"/>
+        <property name="itemDbService"             ref="insuranceclaims.ItemDbService"/>
+        <property name="eligibilityHttpRequest"    ref="insuranceclaims.EligibilityHttpRequest" />
+        <property name="fhirEligibilityService"    ref="insuranceclaims.FHIREligibilityService" />
+        <property name="insurancePolicyService"    ref="insuranceclaims.InsurancePolicyService" />
+        <property name="patientHttpRequest"        ref="insuranceclaims.PatientHttpRequest" />
+    </bean>
+</beans>
