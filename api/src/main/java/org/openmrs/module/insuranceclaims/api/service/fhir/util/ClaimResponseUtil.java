@@ -2,10 +2,11 @@ package org.openmrs.module.insuranceclaims.api.service.fhir.util;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.hl7.fhir.dstu3.model.ClaimResponse;
-import org.hl7.fhir.dstu3.model.CodeableConcept;
-import org.hl7.fhir.dstu3.model.Coding;
-import org.hl7.fhir.dstu3.model.Reference;
+import org.hl7.fhir.r4.model.ClaimResponse;
+import org.hl7.fhir.r4.model.CodeableConcept;
+import org.hl7.fhir.r4.model.Coding;
+import org.hl7.fhir.r4.model.Reference;
+import org.hl7.fhir.r4.model.ClaimResponse.RemittanceOutcome;
 import org.openmrs.module.insuranceclaims.api.model.InsuranceClaim;
 import org.openmrs.module.insuranceclaims.api.model.InsuranceClaimStatus;
 
@@ -23,23 +24,23 @@ import static org.openmrs.module.insuranceclaims.api.service.fhir.util.Insurance
 
 public final class ClaimResponseUtil {
 
-    public static CodeableConcept getClaimResponseOutcome(InsuranceClaim insuranceClaim) {
-        CodeableConcept outcome = new CodeableConcept();
-        outcome.setText(insuranceClaim.getStatus().toString());
+    public static RemittanceOutcome getClaimResponseOutcome(InsuranceClaim insuranceClaim) {
+        // CodeableConcept outcome = new CodeableConcept();
+        // outcome.setText(insuranceClaim.getStatus().toString());
 
-        Coding outcomeCoding = new Coding();
-        String code = String.valueOf(insuranceClaim.getStatus().getNumericStatus());
-        outcomeCoding.setCode(code);
+        // Coding outcomeCoding = new Coding();
+        // String code = String.valueOf(insuranceClaim.getStatus().getNumericStatus());
+        // outcomeCoding.setCode(code);
 
-        outcome.setCoding(Collections.singletonList(outcomeCoding));
+        // outcome.setCoding(Collections.singletonList(outcomeCoding));
 
-        return outcome;
+        return RemittanceOutcome.fromCode(insuranceClaim.getStatus().toString());
     }
 
     public static InsuranceClaimStatus getClaimResponseStatus(ClaimResponse response, List<String> errors) {
         String codeString = response
                 .getOutcome()
-                .getText()
+                .getDisplay()
                 .toUpperCase(Locale.getDefault());
         return InsuranceClaimStatus.valueOf(codeString);
     }

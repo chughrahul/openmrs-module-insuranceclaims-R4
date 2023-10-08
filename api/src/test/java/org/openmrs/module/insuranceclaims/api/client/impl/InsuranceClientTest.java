@@ -1,7 +1,7 @@
 package org.openmrs.module.insuranceclaims.api.client.impl;
 
 import org.hamcrest.Matchers;
-import org.hl7.fhir.dstu3.model.Claim;
+import org.hl7.fhir.r4.model.Claim;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;

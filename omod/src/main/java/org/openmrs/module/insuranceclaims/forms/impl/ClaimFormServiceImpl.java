@@ -44,7 +44,7 @@ public class ClaimFormServiceImpl implements ClaimFormService {
 
     private InsuranceClaimDiagnosisService insuranceClaimDiagnosisService;
 
-    private static final String[] FORM_DATE_FORMAT = {"yyy-mm-dd"};
+    // private static final String[] FORM_DATE_FORMAT = {"yyy-mm-dd"};
 
     private static final String INVALID_LOCATION_ERROR = "You must select valid location";
 
@@ -164,8 +164,10 @@ public class ClaimFormServiceImpl implements ClaimFormService {
     }
 
     private void assignDatesFromFormToClaim(InsuranceClaim claim, NewClaimForm form) {
-        Date startDate = DateUtils.parseDate(form.getStartDate(), FORM_DATE_FORMAT);
-        Date endDate = DateUtils.parseDate(form.getEndDate(), FORM_DATE_FORMAT);
+        // Date startDate = DateUtils.parseDate(form.getStartDate(), FORM_DATE_FORMAT);
+        // Date endDate = DateUtils.parseDate(form.getEndDate(), FORM_DATE_FORMAT);
+        Date startDate = DateUtils.parseDate(form.getStartDate());
+        Date endDate = DateUtils.parseDate(form.getEndDate());
         claim.setDateFrom(startDate);
         claim.setDateTo(endDate);
         claim.setProvider(Context.getProviderService().getProviderByUuid(form.getProvider()));

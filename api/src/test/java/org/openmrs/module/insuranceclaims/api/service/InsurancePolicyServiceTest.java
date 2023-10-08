@@ -2,9 +2,9 @@ package org.openmrs.module.insuranceclaims.api.service;
 
 import ca.uhn.fhir.util.DateUtils;
 import org.hamcrest.Matchers;
-import org.hl7.fhir.dstu3.model.EligibilityResponse;
-import org.hl7.fhir.dstu3.model.Money;
-import org.hl7.fhir.dstu3.model.Reference;
+import org.hl7.fhir.r4.model.CoverageEligibilityResponse;
+import org.hl7.fhir.r4.model.Money;
+import org.hl7.fhir.r4.model.Reference;
 import org.hl7.fhir.exceptions.FHIRException;
 import org.junit.Assert;
 import org.junit.Before;
@@ -64,10 +64,11 @@ public class InsurancePolicyServiceTest extends BaseModuleContextSensitiveTest {
 
     @Test
     public void generateInsurancePolicy_shouldMapEligibilityResponseToPolicy() throws FHIRException {
-        EligibilityResponse eligibilityResponse = createTestEligibilityResponse();
+        CoverageEligibilityResponse eligibilityResponse = createTestEligibilityResponse();
 
         InsurancePolicy expected = createTestPolicyInstance();
-        expected.setExpiryDate(DateUtils.parseDate(TestConstants.TEST_DATE, new String[]{"yyy-MM-dd hh:mm:ss"}));
+        // expected.setExpiryDate(DateUtils.parseDate(TestConstants.TEST_DATE, new String[]{"yyy-MM-dd hh:mm:ss"}));
+        expected.setExpiryDate(DateUtils.parseDate(TestConstants.TEST_DATE));
         InsurancePolicy actual = insurancePolicyService.generateInsurancePolicy(eligibilityResponse);
 
         Assert.assertThat(actual.getExpiryDate(), Matchers.equalTo(expected.getExpiryDate()));
@@ -78,10 +79,10 @@ public class InsurancePolicyServiceTest extends BaseModuleContextSensitiveTest {
 
     @Test
     public void getPolicyIdFromContractReference_shouldReturnProperId() {
-        EligibilityResponse eligibilityResponse = createTestEligibilityResponse();
+        CoverageEligibilityResponse eligibilityResponse = createTestEligibilityResponse();
 
         String actual = insurancePolicyService.getPolicyIdFromContractReference(
-                eligibilityResponse.getInsuranceFirstRep().getContract()
+                eligibilityResponse.getInsuranceFirstRep().getCoverageTarget().getContractFirstRep()
         );
 
         Assert.assertThat(TEST_PATIENT_POLICY_NUMBER, Matchers.equalTo(actual));
@@ -119,11 +120,12 @@ public class InsurancePolicyServiceTest extends BaseModuleContextSensitiveTest {
         return InsurancePolicyMother.createTestInstance(location, identifierType);
     }
 
-    private EligibilityResponse createTestEligibilityResponse() {
-        EligibilityResponse response = new EligibilityResponse();
-        EligibilityResponse.InsuranceComponent insuranceComponent = new EligibilityResponse.InsuranceComponent();
-        insuranceComponent.setContract(createTestContract());
-        insuranceComponent.setBenefitBalance(createTestBenefitCategory());
+    private CoverageEligibilityResponse createTestEligibilityResponse() {
+        CoverageEligibilityResponse response = new CoverageEligibilityResponse();
+        CoverageEligibilityResponse.InsuranceComponent insuranceComponent = new CoverageEligibilityResponse.InsuranceComponent();
+        insuranceComponent.getCoverageTarget().getContract().add(createTestContract());
+        // insuranceComponent.setContract(createTestContract());
+        insuranceComponent.getItemFirstRep().setBenefit(createTestBenefitCategory());
         response.setInsurance(Collections.singletonList(insuranceComponent));
         return response;
     }
@@ -136,20 +138,34 @@ public class InsurancePolicyServiceTest extends BaseModuleContextSensitiveTest {
         return new Reference(referenceString);
     }
 
-    private List<EligibilityResponse.BenefitsComponent> createTestBenefitCategory() {
-        EligibilityResponse.BenefitsComponent component = new EligibilityResponse.BenefitsComponent();
-        component.setFinancial(createTestFinancialComponent());
+    private List<CoverageEligibilityResponse.BenefitComponent> createTestBenefitCategory() {
+        CoverageEligibilityResponse.BenefitComponent component = new CoverageEligibilityResponse.BenefitComponent();
+        // component.setFinancial(createTestFinancialComponent());
+        component.setAllowed(createTestAllowed());
+        component.setUsed(createTestUsed());
         return Collections.singletonList(component);
     }
 
-    public List<EligibilityResponse.BenefitComponent> createTestFinancialComponent() {
-        EligibilityResponse.BenefitComponent  financial = new EligibilityResponse.BenefitComponent();
+    // public List<EligibilityResponse.BenefitComponent> createTestFinancialComponent() {
+    //     EligibilityResponse.BenefitComponent  financial = new EligibilityResponse.BenefitComponent();
+    //     Money allowed = new Money();
+    //     allowed.setValue(ALLOWED_MONEY);
+    //     Money used = new Money();
+    //     used.setValue(USED_MONEY);
+    //     financial.setUsed(used);
+    //     financial.setAllowed(allowed);
+    //     return Collections.singletonList(financial);
+    // }
+
+    public Money createTestAllowed() {
         Money allowed = new Money();
         allowed.setValue(ALLOWED_MONEY);
+        return allowed;
+    }
+
+    public Money createTestUsed() {
         Money used = new Money();
         used.setValue(USED_MONEY);
-        financial.setUsed(used);
-        financial.setAllowed(allowed);
-        return Collections.singletonList(financial);
+        return used;
     }
 }

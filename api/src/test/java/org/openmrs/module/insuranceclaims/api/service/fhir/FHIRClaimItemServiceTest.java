@@ -2,8 +2,8 @@ package org.openmrs.module.insuranceclaims.api.service.fhir;
 
 import org.databene.benerator.InvalidGeneratorSetupException;
 import org.hamcrest.Matchers;
-import org.hl7.fhir.dstu3.model.Claim;
-import org.hl7.fhir.dstu3.model.ClaimResponse;
+import org.hl7.fhir.r4.model.Claim;
+import org.hl7.fhir.r4.model.ClaimResponse;
 import org.hl7.fhir.exceptions.FHIRException;
 import org.junit.After;
 import org.junit.Assert;
@@ -86,7 +86,7 @@ public class FHIRClaimItemServiceTest extends BaseModuleContextSensitiveTest {
         Assert.assertThat(actual.getCategory().getText(), Matchers.equalTo(CATEGORY_SERVICE));
         Assert.assertThat(actual.getQuantity().getValue().intValue(),
                 Matchers.equalTo(testInsuranceItem.getQuantityProvided()));
-        Assert.assertThat(actual.getService().getText(), Matchers.equalTo(getExpectedCode()));
+        Assert.assertThat(actual.getProductOrService().getText(), Matchers.equalTo(getExpectedCode()));
         Assert.assertThat(actual.getUnitPrice().getValue().floatValue(), Matchers.equalTo(21000.00f));
     }
 
@@ -115,7 +115,7 @@ public class FHIRClaimItemServiceTest extends BaseModuleContextSensitiveTest {
 
         Assert.assertThat(generatedClaimResponseItem, Matchers.hasSize(1));
         Assert.assertThat(actual.getAdjudication(), Matchers.hasSize(2));
-        Assert.assertThat(actual.getSequenceLinkId(), Matchers.equalTo(SEQUENCE_FIRST));
+        Assert.assertThat(actual.getItemSequence(), Matchers.equalTo(SEQUENCE_FIRST));
         Assert.assertThat(generalAdjudication.getValue().intValue(), Matchers.equalTo(testInsuranceItem.getQuantityApproved()));
         Assert.assertThat(generalAdjudication.getAmount().getValue(), Matchers.equalTo(testInsuranceItem.getPriceApproved()));
         Assert.assertThat(generalAdjudication.getCategory().getText(), Matchers.equalTo(ITEM_ADJUDICATION_GENERAL_CATEGORY));
@@ -175,7 +175,7 @@ public class FHIRClaimItemServiceTest extends BaseModuleContextSensitiveTest {
         List<Claim.ItemComponent> fhirItems = claimItemService.generateClaimItemComponent(this.testInsuranceClaim);
 
         claim.setItem(fhirItems);
-        claim.setInformation(createClaimTestInformation());
+        claim.setSupportingInfo(createClaimTestInformation());
         return claim;
     }
 
@@ -201,8 +201,8 @@ public class FHIRClaimItemServiceTest extends BaseModuleContextSensitiveTest {
 
     private ClaimResponse.AddedItemComponent createAddItem(InsuranceClaimItem item, int sequence) {
         ClaimResponse.AddedItemComponent addedItem = new ClaimResponse.AddedItemComponent();
-        addedItem.setService(createFhirItemService(item));
-        addedItem.addSequenceLinkId(sequence);
+        addedItem.setProductOrService(createFhirItemService(item));
+        addedItem.addItemSequence(sequence);
         return addedItem;
     }
 
@@ -215,8 +215,8 @@ public class FHIRClaimItemServiceTest extends BaseModuleContextSensitiveTest {
                 .orElseThrow(() -> new InvalidGeneratorSetupException("Concept was not correctly exported from dataset"));
     }
 
-    private List<Claim.SpecialConditionComponent> createClaimTestInformation() {
-        List<Claim.SpecialConditionComponent> information = new ArrayList<>();
+    private List<Claim.SupportingInformationComponent> createClaimTestInformation() {
+        List<Claim.SupportingInformationComponent> information = new ArrayList<>();
         information.add(SpecialComponentUtil.createSpecialComponent("guaranatee_id", "guarantee"));
         information.add(SpecialComponentUtil.createSpecialComponent("explanation", "explanation_id"));
         information.add(SpecialComponentUtil

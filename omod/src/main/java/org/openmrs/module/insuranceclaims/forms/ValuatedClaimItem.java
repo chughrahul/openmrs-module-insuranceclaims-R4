@@ -20,7 +20,8 @@ public class ValuatedClaimItem {
         this.itemName = buildItemName(item.getItem());
         this.itemUuid = item.getUuid();
         this.explanation = item.getExplanation();
-        this.dateServed = DateUtils.formatDate(item.getItem().getDateOfServed(), EXPECTED_DATE_PATTERN);
+        // this.dateServed = DateUtils.formatDate(item.getItem().getDateOfServed(), EXPECTED_DATE_PATTERN);
+        this.dateServed = DateUtils.formatDate(item.getItem().getDateOfServed());
     }
 
     public void setItemName(String itemName) {

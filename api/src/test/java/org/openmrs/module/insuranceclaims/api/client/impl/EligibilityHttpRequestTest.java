@@ -1,8 +1,8 @@
 package org.openmrs.module.insuranceclaims.api.client.impl;
 
 import org.hamcrest.Matchers;
-import org.hl7.fhir.dstu3.model.EligibilityRequest;
-import org.hl7.fhir.dstu3.model.EligibilityResponse;
+import org.hl7.fhir.r4.model.CoverageEligibilityRequest;
+import org.hl7.fhir.r4.model.CoverageEligibilityResponse;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -30,12 +30,12 @@ public class EligibilityHttpRequestTest extends BaseModuleContextSensitiveTest {
     @Test
     public void sendEligibilityRequest_shouldPassFhirObjectToClient() throws URISyntaxException {
         String expectedUrlCall = BASE_URL + "/";
-        EligibilityRequest eligibilityRequest = new EligibilityRequest();
-        EligibilityResponse response = new EligibilityResponse();
+        CoverageEligibilityRequest eligibilityRequest = new CoverageEligibilityRequest();
+        CoverageEligibilityResponse response = new CoverageEligibilityResponse();
 
         when(client.postObject(eq(expectedUrlCall), eq(eligibilityRequest), eq(response.getClass())))
                 .thenAnswer(i -> response);
-        EligibilityResponse result = request.sendEligibilityRequest(BASE_URL, eligibilityRequest);
+        CoverageEligibilityResponse result = request.sendEligibilityRequest(BASE_URL, eligibilityRequest);
         Assert.assertThat(result, Matchers.samePropertyValuesAs(response));
     }
 }

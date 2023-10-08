@@ -1,8 +1,9 @@
 package org.openmrs.module.insuranceclaims.api.service.fhir;
 
 import org.hamcrest.Matchers;
-import org.hl7.fhir.dstu3.model.ClaimResponse;
-import org.hl7.fhir.dstu3.model.Identifier;
+import org.hl7.fhir.r4.model.ClaimResponse;
+import org.hl7.fhir.r4.model.Coding;
+import org.hl7.fhir.r4.model.Identifier;
 import org.hl7.fhir.exceptions.FHIRException;
 import org.junit.Assert;
 import org.junit.Before;
@@ -50,7 +51,18 @@ public class FHIRClaimResponseServiceTest extends BaseModuleContextSensitiveTest
 
         Assert.assertThat(generated, Matchers.notNullValue());
         Assert.assertThat(generated.getId(), Matchers.equalTo(insuranceClaim.getClaimCode()));
-        Assert.assertThat(generated.getTotalBenefit().getValue(), Matchers.equalTo(insuranceClaim.getApprovedTotal()));
+        // Assert.assertThat(generated.getTotalBenefit().getValue(), Matchers.equalTo(insuranceClaim.getApprovedTotal()));
+        boolean hasMatch = false;
+        for (ClaimResponse.TotalComponent total : generated.getTotal()) {
+            for (Coding coding : total.getCategory().getCoding()) {
+                if (coding.getCode().equals("benefit")) {
+                    if (total.getAmount().getValue().equals(insuranceClaim.getApprovedTotal())) {
+                        hasMatch = true;
+                    }
+                }
+            }
+        }
+        Assert.assertTrue(hasMatch);
         Assert.assertThat(generated.getPayment().getAdjustmentReason().getText(), Matchers.equalTo(insuranceClaim.getAdjustment()));
         Assert.assertThat(generated.getPayment().getDate(), Matchers.equalTo(insuranceClaim.getDateProcessed()));
         Assert.assertThat(generated.getCreated(), Matchers.equalTo(insuranceClaim.getDateProcessed()));
@@ -65,9 +77,8 @@ public class FHIRClaimResponseServiceTest extends BaseModuleContextSensitiveTest
                 .map(Identifier::getValue)
                 .collect(Collectors.toList()), Matchers.contains(getExpectedIdentifierCodes().toArray()));
 
-        Assert.assertThat(
-                Integer.parseInt(generated.getOutcome().getCoding().get(0).getCode()),
-                Matchers.equalTo(InsuranceClaimStatus.ENTERED.getNumericStatus()));
+        Assert.assertThat(generated.getOutcome().getDisplay(),
+                Matchers.equalTo(InsuranceClaimStatus.ENTERED));
 
         //TODO: Add item and processNote after changes in database
     }

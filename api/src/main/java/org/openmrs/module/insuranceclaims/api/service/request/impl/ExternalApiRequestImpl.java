@@ -1,14 +1,15 @@
 package org.openmrs.module.insuranceclaims.api.service.request.impl;
 
-import org.hl7.fhir.dstu3.model.BooleanType;
-import org.hl7.fhir.dstu3.model.Claim;
-import org.hl7.fhir.dstu3.model.ClaimResponse;
-import org.hl7.fhir.dstu3.model.EligibilityRequest;
-import org.hl7.fhir.dstu3.model.EligibilityResponse;
-import org.hl7.fhir.dstu3.model.Patient;
+import org.hl7.fhir.r4.model.BooleanType;
+import org.hl7.fhir.r4.model.Claim;
+import org.hl7.fhir.r4.model.ClaimResponse;
+import org.hl7.fhir.r4.model.CoverageEligibilityRequest;
+import org.hl7.fhir.r4.model.CoverageEligibilityResponse;
+import org.hl7.fhir.r4.model.Patient;
 import org.hl7.fhir.exceptions.FHIRException;
 import org.openmrs.api.context.Context;
-import org.openmrs.module.fhir.api.util.FHIRPatientUtil;
+// import org.openmrs.module.fhir.api.util.FHIRPatientUtil;
+import org.openmrs.module.fhir2.api.translators.impl.PatientTranslatorImpl;
 import org.openmrs.module.insuranceclaims.api.client.ClaimHttpRequest;
 import org.openmrs.module.insuranceclaims.api.client.EligibilityHttpRequest;
 import org.openmrs.module.insuranceclaims.api.client.PatientHttpRequest;
@@ -146,8 +147,8 @@ public class ExternalApiRequestImpl implements ExternalApiRequest {
     public InsurancePolicy getPatientPolicy(String policyNumber) throws EligibilityRequestException {
         try {
             setUrls();
-            EligibilityRequest eligibilityRequest = fhirEligibilityService.generateEligibilityRequest(policyNumber);
-            EligibilityResponse response =  eligibilityHttpRequest.sendEligibilityRequest(
+            CoverageEligibilityRequest eligibilityRequest = fhirEligibilityService.generateEligibilityRequest(policyNumber);
+            CoverageEligibilityResponse response =  eligibilityHttpRequest.sendEligibilityRequest(
                     this.eligibilityUrl, eligibilityRequest);
 
             if (response.getInsurance() == null) {
@@ -176,7 +177,8 @@ public class ExternalApiRequestImpl implements ExternalApiRequest {
     public org.openmrs.Patient getPatient(String patientId) throws PatientRequestException {
         try {
             Patient fhirPatient = getFhirPatient(patientId);
-            org.openmrs.Patient patient = FHIRPatientUtil.generateOmrsPatient(fhirPatient, new ArrayList<>());
+            PatientTranslatorImpl patientTranslatorImpl = new PatientTranslatorImpl();
+            org.openmrs.Patient patient = patientTranslatorImpl.toOpenmrsType(fhirPatient);
             patient.setIdentifiers(new TreeSet<>());
 
             String identifier = IdentifierUtil.getPatientIdentifierValueBySystemCode(fhirPatient, ACCESSION_ID);

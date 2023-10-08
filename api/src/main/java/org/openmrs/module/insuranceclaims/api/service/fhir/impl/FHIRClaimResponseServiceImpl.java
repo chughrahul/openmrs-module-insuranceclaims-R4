@@ -1,9 +1,9 @@
 package org.openmrs.module.insuranceclaims.api.service.fhir.impl;
 
-import org.hl7.fhir.dstu3.model.ClaimResponse;
-import org.hl7.fhir.dstu3.model.IdType;
-import org.hl7.fhir.dstu3.model.Money;
-import org.openmrs.module.fhir.api.util.BaseOpenMRSDataUtil;
+import org.hl7.fhir.r4.model.ClaimResponse;
+import org.hl7.fhir.r4.model.IdType;
+import org.hl7.fhir.r4.model.Money;
+// import org.openmrs.module.fhir.api.util.BaseOpenMRSDataUtil;
 import org.openmrs.module.insuranceclaims.api.model.InsuranceClaim;
 import org.openmrs.module.insuranceclaims.api.model.InsuranceClaimStatus;
 import org.openmrs.module.insuranceclaims.api.service.fhir.FHIRClaimItemService;
@@ -50,7 +50,7 @@ public class FHIRClaimResponseServiceImpl implements FHIRClaimResponseService {
         //totalBenefit
         Money benefit = new Money();
         benefit.setValue(omrsClaim.getApprovedTotal());
-        claim.setTotalBenefit(benefit);
+        claim.getTotalFirstRep().setAmount(benefit);
 
         //date created
         claim.setCreated(omrsClaim.getDateProcessed());
@@ -78,8 +78,8 @@ public class FHIRClaimResponseServiceImpl implements FHIRClaimResponseService {
         InsuranceClaim omrsClaim = new InsuranceClaim();
 
         //id
-        BaseOpenMRSDataUtil.readBaseExtensionFields(omrsClaim, claim);
-        BaseOpenMRSDataUtil.setBaseExtensionFields(claim, omrsClaim);
+        // BaseOpenMRSDataUtil.readBaseExtensionFields(omrsClaim, claim);
+        // BaseOpenMRSDataUtil.setBaseExtensionFields(claim, omrsClaim);
 
         omrsClaim.setUuid(getClaimUuid(claim, errors));
 
@@ -94,7 +94,7 @@ public class FHIRClaimResponseServiceImpl implements FHIRClaimResponseService {
         omrsClaim.setAdjustment(claim.getPayment().getAdjustmentReason().getText());
 
         //approved total
-        omrsClaim.setApprovedTotal(claim.getTotalBenefit().getValue());
+        omrsClaim.setApprovedTotal(claim.getTotalFirstRep().getAmount().getValue());
 
         //date processed
         //Use date or payment?

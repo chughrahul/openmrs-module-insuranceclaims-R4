@@ -17,8 +17,10 @@ public class ValuatedClaimForm extends NewClaimForm {
         setClaimCode(claim.getClaimCode());
         setClaimExplanation(claim.getExplanation());
         setClaimJustification(claim.getAdjustment());
-        setStartDate(DateUtils.formatDate(claim.getDateFrom(), EXPECTED_DATE_PATTERN));
-        setEndDate(DateUtils.formatDate(claim.getDateTo(), EXPECTED_DATE_PATTERN));
+        // setStartDate(DateUtils.formatDate(claim.getDateFrom(), EXPECTED_DATE_PATTERN));
+        // setEndDate(DateUtils.formatDate(claim.getDateTo(), EXPECTED_DATE_PATTERN));
+        setStartDate(DateUtils.formatDate(claim.getDateFrom()));
+        setEndDate(DateUtils.formatDate(claim.getDateTo()));
         setLocation(claim.getLocation().getId().toString());
 
         setPaidInFacility(false);

@@ -1,9 +1,9 @@
 package org.openmrs.module.insuranceclaims.api.service.utils;
 
 import org.hamcrest.Matchers;
-import org.hl7.fhir.dstu3.model.Claim;
-import org.hl7.fhir.dstu3.model.ClaimResponse;
-import org.hl7.fhir.dstu3.model.CodeableConcept;
+import org.hl7.fhir.r4.model.Claim;
+import org.hl7.fhir.r4.model.ClaimResponse;
+import org.hl7.fhir.r4.model.CodeableConcept;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;

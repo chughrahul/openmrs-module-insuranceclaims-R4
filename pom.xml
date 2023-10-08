@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
 	<parent>
@@ -33,16 +35,16 @@
 		<openmrsPlatformVersion>2.1.3</openmrsPlatformVersion>
 		<legacyuiVersion>1.4.0</legacyuiVersion>
 		<uicommonsModuleVersion>2.6.0</uicommonsModuleVersion>
-		<fhirVersion>1.18.0</fhirVersion>
+		<fhirVersion>1.2.2</fhirVersion>
 		<javax.servlet.version>3.0.1</javax.servlet.version>
 		<checkstylePluginVersion>3.0.0</checkstylePluginVersion>
 		<pmdPluginVersion>3.10.0</pmdPluginVersion>
 		<spotbugs.vesrion>3.1.11</spotbugs.vesrion>
 		<referenceapplication.version>2.8.1</referenceapplication.version>
 
-		<hapiFhirBaseVersion>2.5</hapiFhirBaseVersion>
-		<hapiFhirStructuresDstuVersion>2.5</hapiFhirStructuresDstuVersion>
-		<hapiValidationResources>2.5</hapiValidationResources>
+		<hapiFhirBaseVersion>6.0.3</hapiFhirBaseVersion>
+		<hapiFhirStructuresDstuVersion>6.0.3</hapiFhirStructuresDstuVersion>
+		<hapiValidationResources>6.0.3</hapiValidationResources>
 		<apiResourceDir>${basedir}/src/main/resources</apiResourceDir>
 
 		<htmlformentryVersion>3.3.0</htmlformentryVersion>
@@ -83,12 +85,13 @@
 
 			<dependency>
 				<groupId>org.openmrs.module</groupId>
-				<artifactId>fhir-api</artifactId>
+				<artifactId>fhir2-api</artifactId>
 				<version>${fhirVersion}</version>
 				<scope>provided</scope>
 			</dependency>
 
-			<!--happi modules provided by fhir-api -->
+			<!--happi
+			modules provided by fhir-api -->
 
 			<dependency>
 				<groupId>ca.uhn.hapi.fhir</groupId>
@@ -99,7 +102,7 @@
 
 			<dependency>
 				<groupId>ca.uhn.hapi.fhir</groupId>
-				<artifactId>hapi-fhir-structures-dstu3</artifactId>
+				<artifactId>hapi-fhir-structures-r4</artifactId>
 				<version>${hapiFhirStructuresDstuVersion}</version>
 				<scope>provided</scope>
 			</dependency>
@@ -108,12 +111,12 @@
 				<groupId>ca.uhn.hapi.fhir</groupId>
 				<artifactId>hapi-fhir-server</artifactId>
 				<version>${hapiFhirStructuresDstuVersion}</version>
-			    <scope>provided</scope>
+				<scope>provided</scope>
 			</dependency>
 
 			<dependency>
 				<groupId>ca.uhn.hapi.fhir</groupId>
-				<artifactId>hapi-fhir-validation-resources-dstu3</artifactId>
+				<artifactId>hapi-fhir-validation-resources-r4</artifactId>
 				<version>${hapiValidationResources}</version>
 				<scope>provided</scope>
 			</dependency>

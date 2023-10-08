@@ -6,9 +6,9 @@ import org.hibernate.Criteria;
 import org.hibernate.NullPrecedence;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Restrictions;
-import org.hl7.fhir.dstu3.model.EligibilityResponse;
-import org.hl7.fhir.dstu3.model.Money;
-import org.hl7.fhir.dstu3.model.Reference;
+import org.hl7.fhir.r4.model.CoverageEligibilityResponse;
+import org.hl7.fhir.r4.model.Money;
+import org.hl7.fhir.r4.model.Reference;
 import org.hl7.fhir.exceptions.FHIRException;
 
 import org.openmrs.Patient;
@@ -39,8 +39,8 @@ public class InsurancePolicyServiceImpl extends BaseOpenmrsDataService<Insurance
     private InsurancePolicyMapper insurancePolicyMapper;
 
     @Override
-    public InsurancePolicy generateInsurancePolicy(EligibilityResponse response) throws FHIRException {
-        Reference contract = response.getInsuranceFirstRep().getContract();
+    public InsurancePolicy generateInsurancePolicy(CoverageEligibilityResponse response) throws FHIRException {
+        Reference contract = response.getInsuranceFirstRep().getCoverageTarget().getContract().get(0);
         InsurancePolicy policy = new InsurancePolicy();
         Date expireDate = getExpireDateFromContractReference(contract);
 
@@ -62,8 +62,9 @@ public class InsurancePolicyServiceImpl extends BaseOpenmrsDataService<Insurance
     @Override
     public Date getExpireDateFromContractReference(Reference contract) {
         String dateString = getElementFromContract(contract.getReference(), CONTRACT_EXPIRE_DATE_ORDINAL);
-        String[] patterns = CONTRACT_DATE_PATTERN.toArray(new String[0]);
-        return DateUtils.parseDate(dateString,patterns);
+        // String[] patterns = CONTRACT_DATE_PATTERN.toArray(new String[0]);
+        // return DateUtils.parseDate(dateString,patterns);
+        return DateUtils.parseDate(dateString);
     }
 
     @Override
@@ -169,15 +170,15 @@ public class InsurancePolicyServiceImpl extends BaseOpenmrsDataService<Insurance
         return policyExpireDate.after(today);
     }
 
-    private BigDecimal getAllowedMoney(EligibilityResponse response) throws FHIRException {
-        EligibilityResponse.BenefitsComponent benefit = response.getInsuranceFirstRep().getBenefitBalanceFirstRep();
-        Money allowedMoney = benefit.getFinancialFirstRep().getAllowedMoney();
+    private BigDecimal getAllowedMoney(CoverageEligibilityResponse response) throws FHIRException {
+        CoverageEligibilityResponse.BenefitComponent benefit = response.getInsuranceFirstRep().getItemFirstRep().getBenefitFirstRep();
+        Money allowedMoney = benefit.getAllowedMoney();
         return allowedMoney.getValue();
     }
 
-    private BigDecimal getUsedMoney(EligibilityResponse response) throws FHIRException {
-        EligibilityResponse.BenefitsComponent benefit = response.getInsuranceFirstRep().getBenefitBalanceFirstRep();
-        Money usedMoney = benefit.getFinancialFirstRep().getUsedMoney();
+    private BigDecimal getUsedMoney(CoverageEligibilityResponse response) throws FHIRException {
+        CoverageEligibilityResponse.BenefitComponent benefit = response.getInsuranceFirstRep().getItemFirstRep().getBenefitFirstRep();
+        Money usedMoney = benefit.getUsedMoney();
         return usedMoney.getValue();
     }
 }
