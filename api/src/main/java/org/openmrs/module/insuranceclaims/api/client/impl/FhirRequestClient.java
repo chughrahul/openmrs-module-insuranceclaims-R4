@@ -11,6 +11,7 @@ import ca.uhn.fhir.rest.client.interceptor.AdditionalRequestHeadersInterceptor;
 import ca.uhn.fhir.rest.client.interceptor.BasicAuthInterceptor;
 import ca.uhn.fhir.rest.client.interceptor.SimpleRequestHeaderInterceptor;
 import org.openmrs.module.fhir2.api.FhirClientService;
+import org.openmrs.module.fhir2.api.impl.FhirClientServiceImpl;
 import org.openmrs.module.insuranceclaims.api.client.FHIRClient;
 import org.openmrs.module.insuranceclaims.api.client.FhirMessageConventer;
 import org.springframework.http.HttpEntity;
@@ -39,7 +40,7 @@ public class FhirRequestClient implements FHIRClient {
 
     private RestTemplate restTemplate = new RestTemplate();
 
-    private FhirClientService fhirClientService;
+    private FhirClientServiceImpl fhirClientService = new FhirClientServiceImpl(FhirContext.forDstu3(), FhirContext.forR4());
 
     private HttpHeaders headers = new HttpHeaders();
 
@@ -83,14 +84,13 @@ public class FhirRequestClient implements FHIRClient {
         headers.setContentType(MediaType.APPLICATION_JSON);
     }
 
-    private <L> ClientHttpEntity createPostClientHttpEntity(String url, L object) throws URISyntaxException {
-        // ClientHttpEntity clientHttpEntity = fhirClientHelper.createRequest(url, object);
-        IParser parser = FhirContext.forR4().newJsonParser();
-		ClientHttpEntity clientHttpEntity = ClientHttpEntity();
-        clientHttpEntity.setMethod(HttpMethod.POST);
-        clientHttpEntity.setUrl(new URI(url));
-        return clientHttpEntity;
-    }
+        private <L> ClientHttpEntity<L> createPostClientHttpEntity(String url, L object) throws URISyntaxException {
+            // ClientHttpEntity clientHttpEntity = fhirClientHelper.createRequest(url, object);
+            ClientHttpEntity<L> clientHttpEntity = new ClientHttpEntity<>(object, HttpMethod.GET, new URI(url));
+            clientHttpEntity.setMethod(HttpMethod.POST);
+            clientHttpEntity.setUrl(new URI(url));
+            return clientHttpEntity;
+        }
 
     private void prepareRestTemplate() {
         List<HttpMessageConverter<?>> converters = new ArrayList<>(getCustomMessageConverter());
